@@ -7,45 +7,35 @@ const authKey = 'aktiYk51K25wTWYxSDlzZ3hRdXdvK2EvNTdibjNsLzU0WHlQUU95N1k1R1V5cTl
 
 module.exports = {
 
+  fetch: function(path, query){
+    const endpoint = Url.format({
+      protocol: 'https',
+      host: 'api.10000ft.com',
+      pathname: path,
+      query: query
+    });
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+    return RequestPromise({url: endpoint, headers: headers});
+  },
 
-fetchProjects: function(){
-  const endpoint = Url.format({
-    protocol: 'https',
-    host: 'api.10000ft.com',
-    pathname: 'api/v1/projects',
-    query: { auth: authKey, per_page: 1000, with_phases: true }
-  });
-  const headers = {
-    'Content-Type': 'application/json'
-  }
-  return RequestPromise({url: endpoint, headers: headers});
-},
+  fetchProjects: function(){
+    return this.fetch('api/v1/projects', { auth: authKey, per_page: 1000, with_phases: true });
+  },
 
-fetchUsers: function(){
-  const endpoint = Url.format({
-    protocol: 'https',
-    host: 'api.10000ft.com',
-    pathname: 'api/v1/users',
-    query: { auth: authKey, per_page: 100 }
-  });
-  const headers = {
-    'Content-Type': 'application/json'
-  }
-  return RequestPromise({url: endpoint, headers: headers});
-},
+  fetchUsers: function(){
+    return this.fetch('api/v1/users', { auth: authKey, per_page: 100 });
+  },
 
-fetchTimeEntries: function(user){
-  const endpoint = Url.format({
-    protocol: 'https',
-    host: 'api.10000ft.com',
-    pathname: `api/v1/users/${user.id}/time_entries`,
-    query: { auth: authKey, per_page: 1000, from: '2016-02-26T00:00:00Z', to: '2016-02-26T00:00:00Z' }
-  });
-  const headers = {
-    'Content-Type': 'application/json'
+  fetchTimeEntries: function(user){
+    return this.fetch(`api/v1/users/${user.id}/time_entries`, { 
+      auth: authKey, 
+      per_page: 1000, 
+      from: '2016-02-26T00:00:00Z', 
+      to: '2016-02-26T00:00:00Z' 
+    });
   }
-  return RequestPromise({url: endpoint, headers: headers});
-}
 
 
 }

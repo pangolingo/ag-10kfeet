@@ -65,8 +65,4 @@ function onFetchTimeEntries(user, response){
 }
 
 TenKAPI.fetchProjects()
-  .then(onFetchProjects)
-
-
-
-
+  .then(onFetchProjects);
