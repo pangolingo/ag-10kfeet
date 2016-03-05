@@ -28,12 +28,12 @@ module.exports = {
     return this.fetch('api/v1/users', { auth: authKey, per_page: 100 });
   },
 
-  fetchTimeEntries: function(user){
+  fetchTimeEntries: function(user, start, end){
     return this.fetch(`api/v1/users/${user.id}/time_entries`, { 
       auth: authKey, 
       per_page: 1000, 
-      from: '2016-02-26T00:00:00Z', 
-      to: '2016-02-26T00:00:00Z' 
+      from: start, 
+      to: end 
     });
   }
 

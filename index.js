@@ -4,6 +4,9 @@
 // pull last week's entries and group by project/phase/task category
 
 const TenKAPI = require('./api');
+
+const startDate = '2016-02-21T00:00:00Z';
+const endDate = '2016-02-27T00:00:00Z';
 let projects;
 
 function filterDevUsers(users){
@@ -28,15 +31,16 @@ function displayTimeEntry(projects, entry){
   if(project && project.parent_id){
     phaseName = project.phase_name
   }
-  return `${projectName} // ${phaseName} // ${entry.task || 'NO TASK'} -- ${entry.notes} -- ${entry.hours}` 
+  // return `${projectName} // ${phaseName} // ${entry.task || 'NO TASK'} -- ${entry.notes} -- ${entry.hours}` 
+  return `${projectName} // ${phaseName} // ${entry.task || 'NO TASK'} -- ${entry.hours}` 
 }
 
 
 function onFetchUsers(response){
   let users = filterDevUsers(JSON.parse(response).data);
-  // users = users.filter(function(user){ return user.dispay_name === "Dave Iverson"; })
+  users = users.filter(function(user){ return user.display_name === "Dave Iverson"; })
   users.forEach(function(user){
-    TenKAPI.fetchTimeEntries(user)
+    TenKAPI.fetchTimeEntries(user, startDate, endDate)
       .then(onFetchTimeEntries.bind(this, user))
   });
 }
@@ -65,4 +69,5 @@ function onFetchTimeEntries(user, response){
 }
 
 TenKAPI.fetchProjects()
-  .then(onFetchProjects);
+  .then(onFetchProjects)
+  .catch(console.log.bind(console));
