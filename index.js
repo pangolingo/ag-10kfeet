@@ -1,14 +1,24 @@
 'use strict';
 
 // next steps:
-// pull last week's entries and group by project/phase/task category
+// handle vacation
+// merge into greerbot
 
 const TenKAPI = require('./api');
+const Moment = require('moment')
 
-const startDate = '2016-02-21T00:00:00Z';
-const endDate = '2016-02-27T00:00:00Z';
+let startDate = '2016-02-21T00:00:00Z';
+let endDate = '2016-02-27T00:00:00Z';
 const showTasks = false;
 let projects;
+let lastWeek = true;
+
+if(lastWeek){
+  startDate = Moment().subtract(1, 'weeks').startOf('isoWeek');
+  endDate = Moment().subtract(1, 'weeks').endOf('isoWeek');
+  startDate = startDate.toISOString();
+  endDate = endDate.toISOString();
+}
 
 function filterDevUsers(users){
   return users.filter(function(user){
