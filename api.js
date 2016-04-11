@@ -35,7 +35,19 @@ module.exports = {
       from: start, 
       to: end 
     });
+  },
+  
+  helpers: {
+    findProjectById: function(projects, id){
+      return projects.find(function(project){
+        return project.id === id;
+      });
+    },
+    filterUsersByDiscipline: function(users, discipline){
+      return users.filter(function(user){
+        return user.discipline === discipline;
+      });
+    }
   }
-
 
 }

@@ -5,7 +5,6 @@
 // merge into greerbot
 
 const TenKAPI = require('./api');
-const Moment = require('moment')
 
 const showTasks = false;
 let projects;
@@ -91,7 +90,7 @@ function formatUserInformation(user, entries){
 }
 
 
-function displayTimeEntries(options, displayFunction){
+module.exports = function(options, displayFunction){
 
 // DO IT!
 TenKAPI.fetchProjects()
@@ -135,8 +134,3 @@ TenKAPI.fetchProjects()
   
 }; // end displayTimeEntries
 
-displayTimeEntries({
-  startDate: Moment().subtract(1, 'weeks').startOf('isoWeek').toISOString(),
-  endDate: Moment().subtract(1, 'weeks').endOf('isoWeek').toISOString(),
-  discipline: "Development"
-}, console.log);
