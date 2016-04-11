@@ -3,7 +3,7 @@ const Request = require('request');
 const Promise = require("bluebird");
 const RequestPromise = require('request-promise');
 
-const authKey = 'aktiYk51K25wTWYxSDlzZ3hRdXdvK2EvNTdibjNsLzU0WHlQUU95N1k1R1V5cTlyVmVaVHFTbHRDWkVtCkkvTW9IM1I0QXRlcEtrUU9ZVEs4S21ENXZXcVdCYkluNWNubGIxd2FwVFdLdTRGRjRKOVkxTGp3S1ZueQpFcDhLbEJTMgo='
+const authKey = process.env.TENKFEET_AUTHKEY;
 
 module.exports = {
 
