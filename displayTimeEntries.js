@@ -53,7 +53,7 @@ printer = printer || defaultPrinter;
 formatter = formatter || defaultFormatter;
 
 // DO IT!
-TenKAPI.fetchProjects()
+return TenKAPI.fetchProjects()
   .then(function(response){
     // set global projects
     projects = JSON.parse(response).data;

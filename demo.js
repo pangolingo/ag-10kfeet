@@ -27,4 +27,7 @@ tenkAPI.displayTimeEntries({
   startDate: Moment().subtract(1, 'weeks').startOf('isoWeek').toISOString(),
   endDate: Moment().subtract(1, 'weeks').endOf('isoWeek').toISOString(),
   discipline: "Development"
-}, printer, formatter);
+}, printer, formatter)
+  .then(function(){
+    console.log("complete");
+  });
