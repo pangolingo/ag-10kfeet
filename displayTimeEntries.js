@@ -5,6 +5,7 @@
 // merge into greerbot
 
 const TenKAPI = require('./api');
+const Helpers = require('./helpers');
 
 const showTasks = false;
 let projects;
@@ -13,7 +14,7 @@ let projects;
 
 function addProjectInfoToEntries(entries){
   return entries.map(function(entry){
-    let project = TenKAPI.helpers.findProjectById(projects, entry.assignable_id);
+    let project = Helpers.projects.findById(projects, entry.assignable_id);
     let projectName = 'UNKNOWN PROJECT';
     let phaseName = 'NO PHASE'
     if(project){
@@ -29,68 +30,27 @@ function addProjectInfoToEntries(entries){
 }
 
 
-// group time entries with the same project, phase and task
-function groupSimilarEntries(entries){
-  let uniqueEntries = [];
-  for(let i = 0; i < entries.length; i++){
-    let entry = entries[i];
-    let similarEntryIndex = uniqueEntries.findIndex(function(groupedEntry){
-      return entriesAreSimilar(entry, groupedEntry)
-    });
-    if(similarEntryIndex < 0){
-      // we don't have a similar entry yet
-      uniqueEntries.push(entry);
-    } else {
-      // we have a similar entry. append hours
-      uniqueEntries[similarEntryIndex].hours += entry.hours;
-    }
+
+var defaultFormatter = {
+  formatUserHeader: function(user, entries){
+    let totalTime = Helpers.timeEntries.countTotalTime(entries);
+    return `${user.display_name} has ${entries.length} entries (${totalTime} hours)`;
+  },
+  formatTimeEntry(entry){
+    return `${entry.project_name} // ${entry.phase_name} -- ${entry.hours}`;
   }
-  return uniqueEntries;
 }
-function entriesAreSimilar(entry1, entry2){
-  let keysToCheck;
-  if(showTasks){
-    keysToCheck = ['project_name', 'phase_name', 'task'];
-  } else {
-    keysToCheck = ['project_name', 'phase_name'];
-  }
-  for(let i = 0; i < keysToCheck.length; i++){
-    let key = keysToCheck[i];
-    if(entry1[key] !== entry2[key]){
-      return false;
-    };
-  }
-  return true
+
+var defaultPrinter = {
+  print: console.log,
+  break: function(){ console.log("") }
 }
 
 
-// for some reason, when "suggestions" are shown in 10k feet,
-// the api returns only the expected entries
-// but when "suggestions" are not show in 10k feet, the API returns an extra entry for each suggestion with 0 hours
-// this even happens if you explicitly ask the api not to return suggestions
-// and what's weird is that these extra entries have "is_suggestion" set to false
-function filterTimeEntries(entries){
-   return entries.filter(function(entry){
-    return entry.hours > 0;
-  });
-}
+module.exports = function(options, printer, formatter){
 
-function countTotalTime(entries){
-  return entries.reduce(function(total, entry){
-    return total + entry.hours;
-  }, 0);
-}
-
-function formatTimeEntry(entry){
-  return `${entry.project_name} // ${entry.phase_name} -- ${entry.hours}`;
-}
-function formatUserInformation(user, entries){
-  let totalTime = countTotalTime(entries);
-  return `${user.display_name} has ${entries.length} entries (${totalTime} hours)`;
-}
-
-
-module.exports = function(options, displayFunction){
+printer = printer || defaultPrinter;
+formatter = formatter || defaultFormatter;
 
 // DO IT!
 TenKAPI.fetchProjects()
@@ -104,7 +64,7 @@ TenKAPI.fetchProjects()
     return JSON.parse(response).data;
   })
   .then(function(users){
-    return TenKAPI.helpers.filterUsersByDiscipline(users, options.discipline);
+    return Helpers.users.filterByDiscipline(users, options.discipline);
   })
   .then(function(users){
     // for each user, fetch the time entries and display them
@@ -114,15 +74,16 @@ TenKAPI.fetchProjects()
         .then(function(response){
           return JSON.parse(response).data;
         })
-        .then(filterTimeEntries)
+        .then(Helpers.timeEntries.filterOutSuggested)
         .then(addProjectInfoToEntries)
-        .then(groupSimilarEntries)
+        .then(Helpers.timeEntries.groupSimilar)
         .then(function(entries){
           // SHOW STUFF HERE
-          displayFunction( formatUserInformation(user, entries) );
+          printer.print( formatter.formatUserHeader(user, entries) );
           entries.forEach(function(entry){ 
-            displayFunction( formatTimeEntry(entry) );
+            printer.print( formatter.formatTimeEntry(entry) );
           }, this);
+          printer.break();
           return entries;
         });
     });

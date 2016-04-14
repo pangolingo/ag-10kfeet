@@ -12,5 +12,6 @@
 // }, console.log);
 
 module.exports = {
-  displayTimeEntries: require('./displayTimeEntries')
+  displayTimeEntries: require('./displayTimeEntries'),
+  helpers: require('./helpers')
 }
